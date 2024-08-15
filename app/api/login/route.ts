@@ -7,12 +7,7 @@ const prisma = new PrismaClient();
 
 export async function POST(req: NextRequest) {
   try {
-    if (req.method !== "POST") {
-      return NextResponse.json(
-        { message: "Method not allowed" },
-        { status: 405 }
-      );
-    }
+
     const { email, password } = await req.json();
 
     // Cek apakah pengguna terdaftar
