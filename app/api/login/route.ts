@@ -7,6 +7,12 @@ const prisma = new PrismaClient();
 
 export async function POST(req: NextRequest) {
   try {
+    if (req.method !== "POST") {
+      return NextResponse.json(
+        { message: "Method not allowed" },
+        { status: 405 }
+      );
+    }
     const { email, password } = await req.json();
 
     // Cek apakah pengguna terdaftar
@@ -48,16 +54,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       { message: "There was an issue with your login. Please try again." },
       { status: 500 }
-    );
-  }
-}
-
-// Menangani metode yang tidak diizinkan
-export function onRequest(req: NextRequest) {
-  if (req.method !== "POST") {
-    return NextResponse.json(
-      { message: "Method not allowed" },
-      { status: 405 }
     );
   }
 }
