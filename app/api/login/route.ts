@@ -42,7 +42,10 @@ export async function POST(req: NextRequest) {
       id: String(user.id),
       email: user.email,
       apikey: user.apikey || "",
+      username: user.username, // Include the username
+      profil_pic: user.profil_pic || "", // Include the profile picture
     });
+
 
     // Respons berhasil
     return NextResponse.json(

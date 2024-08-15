@@ -6,23 +6,37 @@ import {
   DropdownSection,
   DropdownTrigger,
 } from "@nextui-org/react";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { AcmeIcon } from "../icons/acme-icon";
-import { AcmeLogo } from "../icons/acmelogo";
 import { BottomIcon } from "../icons/sidebar/bottom-icon";
 
-interface Company {
-  name: string;
-  location: string;
-  logo: React.ReactNode;
-}
+// Function to decode and parse the cookie value
+const parseUserAuthCookie = (cookieValue: string) => {
+  const decodedValue = decodeURIComponent(cookieValue);
+  const parts = decodedValue.split(":");
+  const name = parts[3];
+  const apiKey = parts[2];
+  return { name, apiKey };
+};
 
 export const CompaniesDropdown = () => {
-  const [company, setCompany] = useState<Company>({
-    name: "Acme Co.",
-    location: "Palo Alto, CA",
-    logo: <AcmeIcon />,
+  const [userData, setUserData] = useState<{ name: string; apiKey: string }>({
+    name: "Default User",
+    apiKey: "No API Key",
   });
+
+  useEffect(() => {
+    const userAuthCookie = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("userAuth="))
+      ?.split("=")[1];
+
+    if (userAuthCookie) {
+      const { name, apiKey } = parseUserAuthCookie(userAuthCookie);
+      setUserData({ name, apiKey });
+    }
+  }, []);
+
   return (
     <Dropdown
       classNames={{
@@ -31,95 +45,39 @@ export const CompaniesDropdown = () => {
     >
       <DropdownTrigger className="cursor-pointer">
         <div className="flex items-center gap-2">
-          {company.logo}
+          <AcmeIcon />
           <div className="flex flex-col gap-4">
-            <h3 className="text-xl font-medium m-0 text-default-900 -mb-4 whitespace-nowrap">
-              {company.name}
+            <h3 className="text-md font-medium m-0 text-default-900 -mb-4 whitespace-nowrap">
+              {userData.name}
             </h3>
             <span className="text-xs font-medium text-default-500">
-              {company.location}
+              {userData.apiKey}
             </span>
           </div>
           <BottomIcon />
         </div>
       </DropdownTrigger>
-      <DropdownMenu
-        onAction={(e) => {
-          if (e === "1") {
-            setCompany({
-              name: "Facebook",
-              location: "San Fransico, CA",
-              logo: <AcmeIcon />,
-            });
-          }
-          if (e === "2") {
-            setCompany({
-              name: "Instagram",
-              location: "Austin, Tx",
-              logo: <AcmeLogo />,
-            });
-          }
-          if (e === "3") {
-            setCompany({
-              name: "Twitter",
-              location: "Brooklyn, NY",
-              logo: <AcmeIcon />,
-            });
-          }
-          if (e === "4") {
-            setCompany({
-              name: "Acme Co.",
-              location: "Palo Alto, CA",
-              logo: <AcmeIcon />,
-            });
-          }
-        }}
-        aria-label="Avatar Actions"
-      >
-        <DropdownSection title="Companies">
+      <DropdownMenu aria-label="Avatar Actions">
+        <DropdownSection title="User Details">
           <DropdownItem
             key="1"
             startContent={<AcmeIcon />}
-            description="San Fransico, CA"
             classNames={{
               base: "py-4",
               title: "text-base font-semibold",
             }}
           >
-            Facebook
+            Name: {userData.name}
           </DropdownItem>
           <DropdownItem
             key="2"
-            startContent={<AcmeLogo />}
-            description="Austin, Tx"
-            classNames={{
-              base: "py-4",
-              title: "text-base font-semibold",
-            }}
-          >
-            Instagram
-          </DropdownItem>
-          <DropdownItem
-            key="3"
             startContent={<AcmeIcon />}
-            description="Brooklyn, NY"
             classNames={{
               base: "py-4",
               title: "text-base font-semibold",
             }}
           >
-            Twitter
-          </DropdownItem>
-          <DropdownItem
-            key="4"
-            startContent={<AcmeIcon />}
-            description="Palo Alto, CA"
-            classNames={{
-              base: "py-4",
-              title: "text-base font-semibold",
-            }}
-          >
-            Acme Co.
+            API Key: {userData.apiKey}
           </DropdownItem>
         </DropdownSection>
       </DropdownMenu>

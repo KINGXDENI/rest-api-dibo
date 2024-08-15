@@ -77,17 +77,13 @@ export const SidebarWrapper = () => {
                 isActive={pathname === "/developers"}
                 title="Developers"
                 icon={<DevIcon />}
+                href="/developers"
               />
               <SidebarItem
                 isActive={pathname === "/listmenu"}
                 title="List Menu"
                 icon={<ViewIcon />}
                 href="/listmenu"
-              />
-              <SidebarItem
-                isActive={pathname === "/settings"}
-                title="Settings"
-                icon={<SettingsIcon />}
               />
             </SidebarMenu>
 
