@@ -1,7 +1,8 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { ChevronDownIcon } from "../icons/sidebar/chevron-down-icon";
 import { Accordion, AccordionItem } from "@nextui-org/react";
+import Link from "next/link"; // Import Link from next/link
 
 interface Item {
   title: string;
@@ -15,6 +16,10 @@ interface Props {
 }
 
 export const CollapseItems = ({ icon, items, title }: Props) => {
+  const handleLinkClick = (href: string) => {
+    window.open(href, "_blank");
+  };
+
   return (
     <div className="flex gap-4 h-full items-center cursor-pointer">
       <Accordion className="px-0">
@@ -37,15 +42,13 @@ export const CollapseItems = ({ icon, items, title }: Props) => {
         >
           <div className="pl-12">
             {items.map((item, index) => (
-              <a
+              <div
                 key={index}
-                href={item.href}
-                className="block w-full text-default-500 hover:text-default-900 transition-colors"
-                target="_blank" // Open link in a new tab
-                rel="noopener noreferrer" // Security enhancement
+                className="w-full flex text-default-500 hover:text-default-900 transition-colors cursor-pointer"
+                onClick={() => handleLinkClick(item.href)}
               >
                 {item.title}
-              </a>
+              </div>
             ))}
           </div>
         </AccordionItem>
