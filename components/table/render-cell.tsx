@@ -1,89 +1,60 @@
-import { User, Tooltip, Chip } from "@nextui-org/react";
 import React from "react";
+import { Tooltip, Chip } from "@nextui-org/react";
 import { DeleteIcon } from "../icons/table/delete-icon";
 import { EditIcon } from "../icons/table/edit-icon";
 import { EyeIcon } from "../icons/table/eye-icon";
-import { users } from "./data";
 
 interface Props {
-  user: (typeof users)[number];
+  menu: {
+    id: number;
+    title: string;
+    icon: string;
+    submenus: any[];
+  };
   columnKey: string | React.Key;
 }
 
-export const RenderCell = ({ user, columnKey }: Props) => {
-  // @ts-ignore
-  const cellValue = user[columnKey];
+export const RenderCell = ({ menu, columnKey }: Props) => {
+  const cellValue = menu[columnKey as keyof typeof menu];
+
   switch (columnKey) {
-    case "name":
+    case "title":
+      return <span>{menu.title}</span>;
+
+    case "icon":
+      return <span>{menu.icon}</span>; // Replace with an icon component if necessary
+
+    case "submenus":
       return (
-        <User
-          avatarProps={{
-            src: "https://i.pravatar.cc/150?u=a04258114e29026702d",
-          }}
-          name={cellValue}
-        >
-          {user.email}
-        </User>
-      );
-    case "role":
-      return (
-        <div>
-          <div>
-            <span>{cellValue}</span>
-          </div>
-          <div>
-            <span>{user.team}</span>
-          </div>
-        </div>
-      );
-    case "status":
-      return (
-        <Chip
-          size="sm"
-          variant="flat"
-          color={
-            cellValue === "active"
-              ? "success"
-              : cellValue === "paused"
-              ? "danger"
-              : "warning"
-          }
-        >
-          <span className="capitalize text-xs">{cellValue}</span>
-        </Chip>
+        <ul>
+          {menu.submenus.map((submenu, index) => (
+            <li key={index}>{submenu.title}</li>
+          ))}
+        </ul>
       );
 
     case "actions":
       return (
-        <div className="flex items-center gap-4 ">
-          <div>
-            <Tooltip content="Details">
-              <button onClick={() => console.log("View user", user.id)}>
-                <EyeIcon size={20} fill="#979797" />
-              </button>
-            </Tooltip>
-          </div>
-          <div>
-            <Tooltip content="Edit user" color="secondary">
-              <button onClick={() => console.log("Edit user", user.id)}>
-                <EditIcon size={20} fill="#979797" />
-              </button>
-            </Tooltip>
-          </div>
-          <div>
-            <Tooltip
-              content="Delete user"
-              color="danger"
-              onClick={() => console.log("Delete user", user.id)}
-            >
-              <button>
-                <DeleteIcon size={20} fill="#FF0080" />
-              </button>
-            </Tooltip>
-          </div>
+        <div className="flex items-center gap-4">
+          <Tooltip content="Details">
+            <button onClick={() => console.log("View menu", menu.id)}>
+              <EyeIcon size={20} fill="#979797" />
+            </button>
+          </Tooltip>
+          <Tooltip content="Edit menu" color="secondary">
+            <button onClick={() => console.log("Edit menu", menu.id)}>
+              <EditIcon size={20} fill="#979797" />
+            </button>
+          </Tooltip>
+          <Tooltip content="Delete menu" color="danger">
+            <button onClick={() => console.log("Delete menu", menu.id)}>
+              <DeleteIcon size={20} fill="#FF0080" />
+            </button>
+          </Tooltip>
         </div>
       );
+
     default:
-      return cellValue;
+      return <span>{cellValue}</span>;
   }
 };
