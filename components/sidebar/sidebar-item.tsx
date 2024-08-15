@@ -10,7 +10,7 @@ interface Props {
   href?: string;
 }
 
-export const SidebarItem = ({ icon, title, isActive, href = "" }: Props) => {
+export const SidebarItem = ({ icon, title, isActive, href = "/" }: Props) => {
   const { collapsed, setCollapsed } = useSidebarContext();
 
   const handleClick = () => {
@@ -18,11 +18,9 @@ export const SidebarItem = ({ icon, title, isActive, href = "" }: Props) => {
       setCollapsed();
     }
   };
+
   return (
-    <NextLink
-      href={href}
-      className="text-default-900 active:bg-none max-w-full"
-    >
+    <NextLink href={href}>
       <div
         className={clsx(
           isActive
