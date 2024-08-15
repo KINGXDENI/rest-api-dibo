@@ -1,60 +1,60 @@
-// app/api/menus/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
+import { createAuthCookie } from "@/actions/auth.action"; // Pastikan path ini benar sesuai dengan struktur project Anda
 
 const prisma = new PrismaClient();
 
-export async function GET(req: NextRequest) {
-  try {
-    // Handle GET request to fetch menus and their submenus
-    const menus = await prisma.menu.findMany({
-      include: {
-        submenus: true, // Include related submenus
-      },
-    });
-    return NextResponse.json(menus);
-  } catch (error) {
-    console.error("Error fetching menus:", error);
-    return NextResponse.json(
-      { message: "Internal Server Error" },
-      { status: 500 }
-    );
-  }
-}
-
 export async function POST(req: NextRequest) {
   try {
-    // Parse JSON body
-    const { title, icon, submenus } = await req.json();
+     if (req.method !== "POST") {
+       return NextResponse.json(
+         { message: "Method not allowed" },
+         { status: 405 }
+       );
+     }
+    const { email, password } = await req.json();
 
-    // Validate the input
-    if (!title || !icon) {
+    // Cek apakah pengguna terdaftar
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
       return NextResponse.json(
-        { message: "Title and icon are required" },
-        { status: 400 }
+        { message: "Invalid email or password" },
+        { status: 401 }
       );
     }
 
-    // Create a new menu
-    const newMenu = await prisma.menu.create({
-      data: {
-        title,
-        icon,
-        submenus: {
-          create: submenus || [], // Create submenus if provided
-        },
-      },
-      include: {
-        submenus: true, // Include related submenus in the response
-      },
+    // Verifikasi password
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return NextResponse.json(
+        { message: "Invalid email or password" },
+        { status: 401 }
+      );
+    }
+
+    // Buat session atau JWT token di sini jika diperlukan
+    // Simpan cookie otentikasi
+    await createAuthCookie({
+      id: String(user.id),
+      email: user.email,
+      apikey: user.apikey || "",
     });
 
-    return NextResponse.json(newMenu, { status: 201 }); // Return the newly created menu with submenus
-  } catch (error) {
-    console.error("Error adding menu:", error);
+    // Respons berhasil
     return NextResponse.json(
-      { message: "Internal Server Error" },
+      { message: "Login successful", user },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Login error:", error);
+    return NextResponse.json(
+      { message: "There was an issue with your login. Please try again." },
       { status: 500 }
     );
   }
 }
+
