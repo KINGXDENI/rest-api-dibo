@@ -6,6 +6,12 @@ const prisma = new PrismaClient();
 
 export async function GET(req: NextRequest) {
   try {
+    if (req.method !== "GET") {
+      return NextResponse.json(
+        { message: "Method not allowed" },
+        { status: 405 }
+      );
+    }
     // Mendapatkan parameter query dari URL
     const url = new URL(req.url);
     const text = url.searchParams.get("text");
@@ -46,12 +52,4 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// Menangani metode yang tidak diizinkan
-export function onRequest(req: NextRequest) {
-  if (req.method !== "GET") {
-    return NextResponse.json(
-      { message: "Method not allowed" },
-      { status: 405 }
-    );
-  }
-}
+

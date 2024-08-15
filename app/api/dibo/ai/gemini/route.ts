@@ -6,6 +6,12 @@ const prisma = new PrismaClient();
 
 export async function GET(req: NextRequest) {
   try {
+    if (req.method !== "GET") {
+      return NextResponse.json(
+        { message: "Method not allowed" },
+        { status: 405 }
+      );
+    }
     // Get query parameters from URL
     const url = new URL(req.url);
     const text = url.searchParams.get("text");
@@ -53,12 +59,3 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// Handle methods other than GET
-export function onRequest(req: NextRequest) {
-  if (req.method !== "GET") {
-    return NextResponse.json(
-      { message: "Method not allowed" },
-      { status: 405 }
-    );
-  }
-}
