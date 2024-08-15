@@ -1,15 +1,13 @@
-// app/api/menus/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
-    // Handle GET request to fetch menus and their submenus
     const menus = await prisma.menu.findMany({
       include: {
-        submenus: true, // Include related submenus
+        submenus: true,
       },
     });
     return NextResponse.json(menus);
@@ -24,10 +22,9 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    // Parse JSON body
     const { title, icon, submenus } = await req.json();
 
-    // Validate the input
+    // Validasi input
     if (!title || !icon) {
       return NextResponse.json(
         { message: "Title and icon are required" },
@@ -35,21 +32,28 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Create a new menu
+    // Validasi submenus jika ada
+    const validatedSubmenus = Array.isArray(submenus) ? submenus : [];
+
+    // Membuat menu baru dengan submenus
     const newMenu = await prisma.menu.create({
       data: {
         title,
         icon,
         submenus: {
-          create: submenus || [], // Create submenus if provided
+          create: validatedSubmenus.map((submenu: any) => ({
+            title: submenu.title,
+            icon: submenu.icon,
+            link: submenu.link, // Menambahkan link jika ada
+          })),
         },
       },
       include: {
-        submenus: true, // Include related submenus in the response
+        submenus: true, // Menyertakan submenu yang baru dibuat
       },
     });
 
-    return NextResponse.json(newMenu, { status: 201 }); // Return the newly created menu with submenus
+    return NextResponse.json(newMenu, { status: 201 });
   } catch (error) {
     console.error("Error adding menu:", error);
     return NextResponse.json(

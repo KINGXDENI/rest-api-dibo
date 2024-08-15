@@ -18,3 +18,23 @@ model User {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 }
+
+model Menu {
+  id        Int       @id @default(autoincrement())
+  title     String
+  icon      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  submenus  Submenu[]
+}
+
+model Submenu {
+  id        Int      @id @default(autoincrement())
+  title     String
+  icon      String
+  menuId    Int
+  link      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  menu      Menu     @relation(fields: [menuId], references: [id])
+}

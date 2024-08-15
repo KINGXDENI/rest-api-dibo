@@ -1,34 +1,30 @@
-"use server";
-import fs from "fs/promises";
-import path from "path";
-
-const apiBaseDir = path.join(process.cwd(), "app/api/dibo");
-
 export const getSidebarData = async () => {
   try {
-    const folders = (await fs.readdir(apiBaseDir, { withFileTypes: true }))
-      .filter((dirent) => dirent.isDirectory())
-      .map((dirent) => dirent.name);
+    // Mengambil data dari API /api/menus
+    const response = await fetch("/api/menus");
 
-    const sidebarData = await Promise.all(
-      folders.map(async (folder) => {
-        const folderPath = path.join(apiBaseDir, folder);
-        const subfolders = (
-          await fs.readdir(folderPath, { withFileTypes: true })
-        )
-          .filter((dirent) => dirent.isDirectory())
-          .map((dirent) => dirent.name);
+    // Mengecek status response
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
 
-        return {
-          title: folder,
-          items: subfolders,
-        };
-      })
-    );
+    // Mengambil data JSON
+    const menus = await response.json();
+
+    // Membentuk data sidebar dari data menus
+    const sidebarData = menus.map((menu: any) => ({
+      title: menu.title,
+      items: menu.submenus.map((submenu: any) => ({
+        title: submenu.title,
+        href: `api/dibo/${menu.title.toLowerCase().replace(/\s+/g, "-")}/${
+          submenu.link
+        }`, // Membentuk href
+      })),
+    }));
 
     return sidebarData;
   } catch (error) {
-    console.error("Error reading sidebar data:", error);
+    console.error("Error fetching sidebar data:", error);
     return [];
   }
 };
