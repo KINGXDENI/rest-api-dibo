@@ -20,7 +20,7 @@ import { getSidebarData } from "@/utils/getSidebarData"; // Import the utility f
 
 export const SidebarWrapper = () => {
   const [sidebarData, setSidebarData] = useState<
-    Array<{ title: string; items: string[] }>
+    Array<{ title: string; items: Array<{ title: string; href: string }> }>
   >([]);
   const pathname = usePathname();
   const { collapsed, setCollapsed } = useSidebarContext();
@@ -65,8 +65,8 @@ export const SidebarWrapper = () => {
                   <CollapseItems
                     key={menu.title}
                     title={menu.title}
-                    items={menu.items.map(item => ({ title: item, href: `/${item}` }))} // Tambahkan 'title' untuk memenuhi tipe 'Item'
-                    icon={<BalanceIcon />} // Use an appropriate icon or leave it empty
+                    items={menu.items} // Pastikan items di sini adalah array objek dengan properti title dan href
+                    icon={<BalanceIcon />}
                   />
                 ))}
             </SidebarMenu>
