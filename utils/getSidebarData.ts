@@ -1,3 +1,4 @@
+// Update sidebarData to match Item[] type
 export const getSidebarData = async () => {
   try {
     // Mengambil data dari API /api/menus
@@ -18,7 +19,7 @@ export const getSidebarData = async () => {
         title: submenu.title,
         href: `api/dibo/${menu.title.toLowerCase().replace(/\s+/g, "-")}/${
           submenu.link
-        }`, // Membentuk href
+        }`,
       })),
     }));
 

@@ -65,7 +65,7 @@ export const SidebarWrapper = () => {
                   <CollapseItems
                     key={menu.title}
                     title={menu.title}
-                    items={menu.items}
+                    items={menu.items.map(item => ({ title: item, href: `/${item}` }))} // Tambahkan 'title' untuk memenuhi tipe 'Item'
                     icon={<BalanceIcon />} // Use an appropriate icon or leave it empty
                   />
                 ))}
